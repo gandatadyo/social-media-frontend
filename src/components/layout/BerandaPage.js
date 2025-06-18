@@ -21,14 +21,16 @@ export default function Beranda() {
 
   const getPosts = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/posts`, {
-        withCredentials: true,
+      const response = await axios.post(`${BASE_URL}/posts`, {
+        token: getCookies().token
+      }, {
         headers: {
           'Content-Type': 'application/json',
         }
       });
 
       if (response.status === 200) {
+        console.log(response);
         setListPosts(response.data.data);
       } else {
 
@@ -40,11 +42,51 @@ export default function Beranda() {
     }
   }
 
+  function formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return 'Baru saja';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} menit yang lalu`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} jam yang lalu`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days} hari yang lalu`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 4) return `${weeks} minggu yang lalu`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months} bulan yang lalu`;
+    const years = Math.floor(days / 365);
+    return `${years} tahun yang lalu`;
+  }
+
   const sendPosts = async (description) => {
     try {
       const response = await axios.post(`${BASE_URL}/create_post`, {
         token: getCookies().token,
         description: description
+      });
+
+      if (response.status === 200) {
+        getPosts();
+      } else {
+        console.error('Failed to create post');
+      }
+    } catch (error) {
+      console.log(error);
+      console.error('Error creating post:', error);
+    }
+  }
+
+  const deletePosts = async (postId) => {
+    try {
+      const response = await axios.delete(`${BASE_URL}/delete_post`, {
+        data: {
+          token: getCookies().token,
+          post_id: postId
+        }
       });
 
       if (response.status === 200) {
@@ -117,7 +159,7 @@ export default function Beranda() {
               background: '#f3f4f6',
               color: '#222'
             }}
-            // You can add onChange handler here for search functionality
+          // You can add onChange handler here for search functionality
           />
         </div>
         <ul className='text-green-600' style={{ listStyle: 'none', display: 'flex', gap: '1rem', margin: 0, padding: 0 }}>
@@ -169,7 +211,6 @@ export default function Beranda() {
             ) : (
               listPosts.map((post, idx) => (
                 <div key={post.id || idx} style={{ background: '#fff', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: '1rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-                  {/* Profile Image */}
                   <div>
                     {post.user?.profileImageUrl ? (
                       <img
@@ -196,6 +237,9 @@ export default function Beranda() {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#16a34a' }}>{post.name || 'User'}</div>
+                    <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>
+                      {formatTimeAgo(post.created_at)}
+                    </div>
                     <div>{post.content}</div>
                     <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem' }}>
                       <button
@@ -236,6 +280,34 @@ export default function Beranda() {
                         </svg>
                         Comment
                       </button>
+
+                      {(post.status_delete == 'true') && (
+                        <button
+                          style={{
+                            background: '#fee2e2',
+                            border: 'none',
+                            borderRadius: '4px',
+                            padding: '0.25rem 1rem',
+                            cursor: 'pointer',
+                            color: '#dc2626',
+                            fontWeight: 500,
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                          onClick={async () => {
+                            const confirmDelete = window.confirm('Are you sure you want to delete this post?');
+                            if (confirmDelete) {
+                              deletePosts(post.id);
+                            }
+                          }}
+                        >
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
+                            <path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                          </svg>
+                          Delete
+                        </button>
+                      )}
+
                     </div>
                   </div>
                 </div>
