@@ -1,4 +1,4 @@
-import BerandaPage from '@/compontens/layout/BerandaPage.js';
+import BerandaPage from '../../../components/layout/BerandaPage';
 
 export default function Home() {
   return (

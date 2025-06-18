@@ -72,7 +72,7 @@ export default function HomePage() {
                 <div>
                   <Button className='w-full mt-5 rounded-xl h-[50px]'
                     onClick={() => {
-                      window.location.href = '/'
+                      
                     }}>
                     Daftar Akun
                   </Button>

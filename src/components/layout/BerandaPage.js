@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getCookies, setCookie } from '../../utils/helperClient';
 import { BASE_URL } from '../../utils/api';
+import CommentLayout from './CommentLayout';
 import axios from 'axios';
 
 export default function Beranda() {
@@ -66,13 +67,10 @@ export default function Beranda() {
   const [selectedPost, setSelectedPost] = useState(null);
 
   // Dummy comments data (replace with API call if needed)
-  const [comments, setComments] = useState([]);
 
   // Function to open modal and set selected post
   const handleShowComments = (post) => {
     setSelectedPost(post);
-    // TODO: Fetch comments for the post here if needed
-    setComments(post.comments || []); // or fetch from API
     setShowCommentsModal(true);
   };
 
@@ -80,7 +78,6 @@ export default function Beranda() {
   const handleCloseModal = () => {
     setShowCommentsModal(false);
     setSelectedPost(null);
-    setComments([]);
   };
 
   return (
@@ -108,7 +105,7 @@ export default function Beranda() {
         </ul>
       </nav>
 
-      <div className='container mx-auto'>
+      <div className='container mx-auto' style={{ maxWidth: "900px" }}>
         <main style={{ flex: 1, padding: '2rem' }}>
           {/* Input for new post */}
           <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -243,7 +240,7 @@ export default function Beranda() {
                   borderRadius: 8,
                   padding: 24,
                   minWidth: 320,
-                  maxWidth: 400,
+                  maxWidth: 800,
                   width: '100%',
                   boxShadow: '0 2px 16px rgba(0,0,0,0.15)',
                   position: 'relative'
@@ -266,18 +263,8 @@ export default function Beranda() {
                   &times;
                 </button>
                 <h3 style={{ marginBottom: 16 }}>Comments</h3>
-                {comments.length === 0 ? (
-                  <div style={{ color: '#888' }}>Belum ada komentar.</div>
-                ) : (
-                  <ul style={{ padding: 0, margin: 0, listStyle: 'none' }}>
-                    {comments.map((comment, idx) => (
-                      <li key={comment.id || idx} style={{ marginBottom: 12, borderBottom: '1px solid #eee', paddingBottom: 8 }}>
-                        <div style={{ fontWeight: 500 }}>{comment.user?.name || 'User'}</div>
-                        <div style={{ fontSize: 14 }}>{comment.content}</div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+
+                <CommentLayout postId={selectedPost.id} />
               </div>
             </div>
           )}
