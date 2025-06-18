@@ -63,7 +63,7 @@ export default function Comment({ postId }) {
             <div>
                 {listComment.length === 0 ? (
                     <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-                        <div>Tidak ada comment.</div>
+                        <div style={{ color: '#16a34a' /* text-green-600 */ }}>Tidak ada comment.</div>
                     </div>
                 ) : (
                     listComment.map((post, idx) => (
@@ -81,20 +81,20 @@ export default function Comment({ postId }) {
                                         width: 48,
                                         height: 48,
                                         borderRadius: '50%',
-                                        background: '#c7d2fe',
+                                        background: '#bbf7d0', // bg-green-100
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         fontWeight: 'bold',
                                         fontSize: 20,
-                                        color: '#6366f1'
+                                        color: '#16a34a' // text-green-600
                                     }}>
                                         {post.name ? post.name.charAt(0).toUpperCase() : 'U'}
                                     </div>
                                 )}
                             </div>
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{post.name || 'User'}</div>
+                                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#16a34a' /* text-green-600 */ }}>{post.name || 'User'}</div>
                                 <div>{post.comment}</div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@ export default function Comment({ postId }) {
                     rows={3}
                     value={description}
                     onChange={e => setDescription(e.target.value)}
-                    style={{ width: '100%', resize: 'vertical', padding: '0.5rem' }}
+                    style={{ width: '100%', resize: 'vertical', padding: '0.5rem', color: '#16a34a' /* text-green-600 */ }}
                 />
                 <button
                     onClick={() => {
@@ -116,7 +116,7 @@ export default function Comment({ postId }) {
                             setDescription('');
                         }
                     }}
-                    style={{ padding: '0.5rem 1.5rem', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ padding: '0.5rem 1.5rem', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                 >
                     Post
                 </button>

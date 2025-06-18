@@ -84,7 +84,7 @@ export default function Beranda() {
     <div className='bg-gray-100 h-[100%]'>
 
       <nav
-        className='bg-indigo-600 text-white'
+        className='bg-white'
         style={{
           position: 'sticky',
           top: 0,
@@ -95,10 +95,34 @@ export default function Beranda() {
           padding: '1rem'
         }}
       >
-        <div className='text-[30px]'>Social Media</div>
-        <ul style={{ listStyle: 'none', display: 'flex', gap: '1rem', margin: 0, padding: 0 }}>
+        <div className='text-[30px]'>
+          <h1 className="text-xl font-bold">
+            <span className="text-green-600">Healthy</span>
+            <span className="text-orange-500">Mate</span>
+            <span className="text-green-600">Forum</span>
+          </h1>
+        </div>
+        {/* Centered search input */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          <input
+            type="text"
+            placeholder="Cari postingan..."
+            style={{
+              width: 1020,
+              padding: '0.5rem 1rem',
+              borderRadius: 20,
+              border: '1px solid #cbd5e1',
+              outline: 'none',
+              fontSize: 16,
+              background: '#f3f4f6',
+              color: '#222'
+            }}
+            // You can add onChange handler here for search functionality
+          />
+        </div>
+        <ul className='text-green-600' style={{ listStyle: 'none', display: 'flex', gap: '1rem', margin: 0, padding: 0 }}>
           <li>
-            <a href="#" onClick={logout} style={{ textDecoration: 'none' }}>
+            <a href="#" onClick={logout} style={{ textDecoration: 'none', color: '#16a34a', fontWeight: 600 }}>
               Keluar
             </a>
           </li>
@@ -106,172 +130,190 @@ export default function Beranda() {
       </nav>
 
       <div className='container mx-auto' style={{ maxWidth: "900px" }}>
-        <main style={{ flex: 1, padding: '2rem' }}>
-          {/* Input for new post */}
-          <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <textarea
-              placeholder="Apa yang sedang kamu pikirkan?"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical', minHeight: '48px' }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', color: '#6366f1', fontWeight: 500 }}>
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 8 }}>
-                  <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L18 9.828M7 17a4 4 0 005.656 0l6.586-6.586a4 4 0 00-5.656-5.656L4.929 11.343a6 6 0 108.485 8.485" />
-                </svg>
-                <input type="file" accept="image/*" style={{ display: 'none' }} />
-                Lampirkan Gambar
-              </label>
-              <button
-                onClick={() => {
-                  if (description.trim()) {
-                    sendPosts(description);
-                    setDescription('');
-                  }
-                }}
-                style={{ padding: '0.5rem 1.5rem', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-              >
-                Post
-              </button>
+        <div className='flex'>
+          <main style={{ flex: 1, padding: '2rem' }}>
+            {/* Input for new post */}
+            <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <textarea
+                placeholder="Apa yang sedang kamu pikirkan?"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical', minHeight: '48px' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', color: '#16a34a', fontWeight: 500 }}>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 8 }}>
+                    <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L18 9.828M7 17a4 4 0 005.656 0l6.586-6.586a4 4 0 00-5.656-5.656L4.929 11.343a6 6 0 108.485 8.485" />
+                  </svg>
+                  <input type="file" accept="image/*" style={{ display: 'none' }} />
+                  Lampirkan Gambar
+                </label>
+                <button
+                  onClick={() => {
+                    if (description.trim()) {
+                      sendPosts(description);
+                      setDescription('');
+                    }
+                  }}
+                  style={{ padding: '0.5rem 1.5rem', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  Post
+                </button>
+              </div>
             </div>
-          </div>
 
-          {listPosts.length === 0 ? (
-            <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-              <div>Tidak ada postingan.</div>
-            </div>
-          ) : (
-            listPosts.map((post, idx) => (
-              <div key={post.id || idx} style={{ background: '#fff', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: '1rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-                {/* Profile Image */}
-                <div>
-                  {post.user?.profileImageUrl ? (
-                    <img
-                      src={post.user.profileImageUrl}
-                      alt="Profile"
-                      style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', background: '#eee' }}
-                    />
-                  ) : (
-                    <div style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      background: '#c7d2fe',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 'bold',
-                      fontSize: 20,
-                      color: '#6366f1'
-                    }}>
-                      {post.name ? post.name.charAt(0).toUpperCase() : 'U'}
+            {listPosts.length === 0 ? (
+              <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                <div>Tidak ada postingan.</div>
+              </div>
+            ) : (
+              listPosts.map((post, idx) => (
+                <div key={post.id || idx} style={{ background: '#fff', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: '1rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                  {/* Profile Image */}
+                  <div>
+                    {post.user?.profileImageUrl ? (
+                      <img
+                        src={post.user.profileImageUrl}
+                        alt="Profile"
+                        style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', background: '#eee' }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: '50%',
+                        background: '#bbf7d0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        color: '#16a34a'
+                      }}>
+                        {post.name ? post.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#16a34a' }}>{post.name || 'User'}</div>
+                    <div>{post.content}</div>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem' }}>
+                      <button
+                        style={{
+                          background: '#f3f4f6',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '0.25rem 1rem',
+                          cursor: 'pointer',
+                          color: '#16a34a',
+                          fontWeight: 500,
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}
+                        onClick={() => alert('Like feature coming soon!')}
+                      >
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
+                          <path d="M5 15l7-7 7 7" />
+                        </svg>
+                        Like
+                      </button>
+                      <button
+                        style={{
+                          background: '#f3f4f6',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '0.25rem 1rem',
+                          cursor: 'pointer',
+                          color: '#16a34a',
+                          fontWeight: 500,
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}
+                        onClick={() => handleShowComments(post)}
+                      >
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
+                          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                        </svg>
+                        Comment
+                      </button>
                     </div>
-                  )}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{post.name || 'User'}</div>
-                  <div>{post.content}</div>
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem' }}>
-                    <button
-                      style={{
-                        background: '#f3f4f6',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '0.25rem 1rem',
-                        cursor: 'pointer',
-                        color: '#6366f1',
-                        fontWeight: 500,
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}
-                      onClick={() => alert('Like feature coming soon!')}
-                    >
-                      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
-                        <path d="M5 15l7-7 7 7" />
-                      </svg>
-                      Like
-                    </button>
-                    <button
-                      style={{
-                        background: '#f3f4f6',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '0.25rem 1rem',
-                        cursor: 'pointer',
-                        color: '#6366f1',
-                        fontWeight: 500,
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}
-                      onClick={() => handleShowComments(post)}
-                    >
-                      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
-                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                      </svg>
-                      Comment
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
 
-          {/* Modal for comments */}
-          {showCommentsModal && (
-            <div
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                background: 'rgba(0,0,0,0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 1000
-              }}
-              onClick={handleCloseModal}
-            >
+            {/* Modal for comments */}
+            {showCommentsModal && (
               <div
                 style={{
-                  background: '#fff',
-                  borderRadius: 8,
-                  padding: 24,
-                  minWidth: 320,
-                  maxWidth: 800,
-                  width: '100%',
-                  boxShadow: '0 2px 16px rgba(0,0,0,0.15)',
-                  position: 'relative'
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100vw',
+                  height: '100vh',
+                  background: 'rgba(0,0,0,0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 1000
                 }}
-                onClick={e => e.stopPropagation()}
+                onClick={handleCloseModal}
               >
-                <button
-                  onClick={handleCloseModal}
+                <div
                   style={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    background: 'transparent',
-                    border: 'none',
-                    fontSize: 20,
-                    cursor: 'pointer'
+                    background: '#fff',
+                    borderRadius: 8,
+                    padding: 24,
+                    minWidth: 320,
+                    maxWidth: 800,
+                    width: '100%',
+                    boxShadow: '0 2px 16px rgba(0,0,0,0.15)',
+                    position: 'relative'
                   }}
-                  aria-label="Close"
+                  onClick={e => e.stopPropagation()}
                 >
-                  &times;
-                </button>
-                <h3 style={{ marginBottom: 16 }}>Comments</h3>
+                  <button
+                    onClick={handleCloseModal}
+                    style={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      background: 'transparent',
+                      border: 'none',
+                      fontSize: 20,
+                      cursor: 'pointer'
+                    }}
+                    aria-label="Close"
+                  >
+                    &times;
+                  </button>
+                  <h3 style={{ marginBottom: 16, color: '#16a34a' }}>Comments</h3>
 
-                <CommentLayout postId={selectedPost.id} />
+                  <CommentLayout postId={selectedPost.id} />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-        </main>
+          </main>
+          <aside style={{ padding: '2rem 1rem' }}>
+            <nav style={{ padding: '2rem 1rem', width: 260, background: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', height: 'fit-content' }}>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <li>
+                  <a href="/" style={{ color: '#16a34a', textDecoration: 'none', fontWeight: 500, fontSize: 18 }}>
+                    Terbaru
+                  </a>
+                </li>
+                <li>
+                  <a href="/profile" style={{ color: '#16a34a', textDecoration: 'none', fontWeight: 500, fontSize: 18 }}>
+                    Paling Banyak Disukai
+                  </a>
+                </li>
+
+              </ul>
+            </nav>
+          </aside>
+        </div>
       </div>
-
     </div>
   );
 }
