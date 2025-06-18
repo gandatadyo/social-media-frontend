@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
-:root {
+.color-purple {
+  color: #6c63ff;
+}
+
+.bg-purple {
+  background-color: #6c63ff;
+}
+
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -23,4 +31,4 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-}
+} */
