@@ -1,8 +1,8 @@
-import BerandaPage from '../components/layout/BerandaPage'
-import { BASE_URL } from '../utils/api'
+import ProfilePage from '../../../components/layout/ProfilePage'
+import { BASE_URL } from '../../../utils/api'
 import { cookies } from 'next/headers'
 
-export default async function Home() {
+export default async function Profile() {
 
   let dataAcount = null
   const cookieStore = await cookies();
@@ -25,8 +25,7 @@ export default async function Home() {
       console.log(error);
     }
   }
-
   return (
-    <BerandaPage dataAcount={dataAcount} />
+    <ProfilePage dataAcount={dataAcount} />
   );
 }

@@ -6,10 +6,10 @@ import { BASE_URL } from '../../utils/api';
 import CommentLayout from './CommentLayout';
 import axios from 'axios';
 
-export default function Beranda() {
-
+export default function Beranda({ dataAcount }) {
   const [listPosts, setListPosts] = useState([]);
   const [description, setDescription] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
 
   function logout() {
     const r = confirm('Do you want logout ?')
@@ -19,10 +19,11 @@ export default function Beranda() {
     }
   }
 
-  const getPosts = async () => {
+  const getPosts = async (filterData) => {
     try {
       const response = await axios.post(`${BASE_URL}/posts`, {
-        token: getCookies().token
+        token: getCookies().token,
+        filter_post: filterData
       }, {
         headers: {
           'Content-Type': 'application/json',
@@ -64,12 +65,31 @@ export default function Beranda() {
 
   const sendPosts = async (description) => {
     try {
-      const response = await axios.post(`${BASE_URL}/create_post`, {
-        token: getCookies().token,
-        description: description
+      const formData = new FormData();
+      formData.append('token', getCookies().token);
+      formData.append('description', description);
+      if (imagePreview) {
+        // Convert dataURL to Blob
+        const arr = imagePreview.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        const file = new Blob([u8arr], { type: mime });
+        formData.append('image', file, 'image.png');
+      }
+
+      const response = await axios.post(`${BASE_URL}/create_post`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
       });
 
       if (response.status === 200) {
+        setImagePreview(null);
         getPosts();
       } else {
         console.error('Failed to create post');
@@ -137,8 +157,6 @@ export default function Beranda() {
     }
   }
 
-
-
   useEffect(() => {
     getPosts();
   }, []);
@@ -146,6 +164,9 @@ export default function Beranda() {
   // State for modal visibility and selected post
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+
+  // State for user dropdown menu
+  const [showDropdown, setShowDropdown] = useState(false);
 
   // Dummy comments data (replace with API call if needed)
 
@@ -201,19 +222,93 @@ export default function Beranda() {
           // You can add onChange handler here for search functionality
           />
         </div>
-        <ul className='text-green-600' style={{ listStyle: 'none', display: 'flex', gap: '1rem', margin: 0, padding: 0 }}>
-          <li>
-            <a href="#" onClick={logout} style={{ textDecoration: 'none', color: '#16a34a', fontWeight: 600 }}>
-              Keluar
-            </a>
-          </li>
-        </ul>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', position: 'relative' }}>
+          {/* User Info with Dropdown */}
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+              onClick={() => setShowDropdown(prev => !prev)}
+              tabIndex={0}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+            >
+              {dataAcount?.profileImageUrl ? (
+                <img
+                  src={dataAcount.profileImageUrl}
+                  alt="Profile"
+                  style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', background: '#eee' }}
+                />
+              ) : (
+                <div style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  background: '#bbf7d0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                  color: '#16a34a'
+                }}>
+                  {dataAcount?.name ? dataAcount.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+              )}
+              <span style={{ fontWeight: 600, color: '#16a34a', fontSize: 16 }}>
+                {dataAcount?.name || 'User'}
+              </span>
+              <svg width="18" height="18" fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+            {showDropdown && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 44,
+                  right: 0,
+                  background: '#fff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 8,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  minWidth: 140,
+                  zIndex: 100
+                }}
+              >
+                <a
+                  href="/profile"
+                  style={{
+                    display: 'block',
+                    padding: '0.75rem 1rem',
+                    color: '#16a34a',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    borderBottom: '1px solid #f3f4f6'
+                  }}
+                >
+                  Profile
+                </a>
+                <a
+                  href="#"
+                  onClick={e => { e.preventDefault(); logout(); }}
+                  style={{
+                    display: 'block',
+                    padding: '0.75rem 1rem',
+                    color: '#dc2626',
+                    textDecoration: 'none',
+                    fontWeight: 500
+                  }}
+                >
+                  Logout
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
       </nav>
 
       <div className='container mx-auto' style={{ maxWidth: "900px" }}>
         <div className='flex'>
           <main style={{ flex: 1, padding: '2rem' }}>
-            {/* Input for new post */}
             <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <textarea
                 placeholder="Apa yang sedang kamu pikirkan?"
@@ -226,9 +321,29 @@ export default function Beranda() {
                   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 8 }}>
                     <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L18 9.828M7 17a4 4 0 005.656 0l6.586-6.586a4 4 0 00-5.656-5.656L4.929 11.343a6 6 0 108.485 8.485" />
                   </svg>
-                  <input type="file" accept="image/*" style={{ display: 'none' }} />
+                  <input type="file" accept="image/*" style={{ display: 'none' }}
+                    onChange={e => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setImagePreview(reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      } else {
+                        setImagePreview(null);
+                      }
+                    }}
+                  />
                   Lampirkan Gambar
                 </label>
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    style={{ maxWidth: 120, maxHeight: 120, borderRadius: 8, marginRight: 12 }}
+                  />
+                )}
                 <button
                   onClick={() => {
                     if (description.trim()) {
@@ -280,7 +395,16 @@ export default function Beranda() {
                       {formatTimeAgo(post.created_at)}
                     </div>
                     <div>{post.content}</div>
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem' }}>
+                    <div className='pr-4'>
+                      {post.image_path && (
+                        <img
+                          src={`${BASE_URL}/${post.image_path}`}
+                          alt="Post"
+                          style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '0.5rem' }}
+                        />
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', alignItems: 'center' }}>
                       <button
                         style={{
                           background: '#f3f4f6',
@@ -314,6 +438,10 @@ export default function Beranda() {
                         )}
                         {parseInt(post.is_liked) > 0 ? 'Liked' : 'Like'}
                       </button>
+                      {/* Show total likes */}
+                      <span style={{ color: '#16a34a', fontWeight: 500, fontSize: 15 }}>
+                        {post.total_likes || 0} Likes
+                      </span>
                       <button
                         style={{
                           background: '#f3f4f6',
@@ -366,8 +494,6 @@ export default function Beranda() {
                 </div>
               ))
             )}
-
-            {/* Modal for comments */}
             {showCommentsModal && (
               <div
                 style={{
@@ -424,16 +550,29 @@ export default function Beranda() {
             <nav style={{ padding: '2rem 1rem', width: 260, background: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', height: 'fit-content' }}>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <li>
-                  <a href="/" style={{ color: '#16a34a', textDecoration: 'none', fontWeight: 500, fontSize: 18 }}>
+                  <a
+                    href="/"
+                    style={{ color: '#16a34a', textDecoration: 'none', fontWeight: 500, fontSize: 18 }}
+                    onClick={e => {
+                      e.preventDefault();
+                      getPosts();
+                    }}
+                  >
                     Terbaru
                   </a>
                 </li>
                 <li>
-                  <a href="/profile" style={{ color: '#16a34a', textDecoration: 'none', fontWeight: 500, fontSize: 18 }}>
+                  <a
+                    href="/"
+                    style={{ color: '#16a34a', textDecoration: 'none', fontWeight: 500, fontSize: 18 }}
+                    onClick={e => {
+                      e.preventDefault();
+                      getPosts('favorite');
+                    }}
+                  >
                     Paling Banyak Disukai
                   </a>
                 </li>
-
               </ul>
             </nav>
           </aside>

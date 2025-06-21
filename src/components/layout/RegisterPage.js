@@ -4,39 +4,55 @@
 import { useState } from 'react';
 import InputText from '../../components/ui/InputText';
 import Button from '../../components/ui/Button';
+import { BASE_URL } from '../../utils/api'
+import axios from 'axios';
 // import { Open_Sans } from "next/font/google";
 
 // const openSans = Open_Sans({ subsets: ['latin'] })
 
 export default function HomePage() {
   const [isLogin, setIsLogin] = useState(true);
-  const [message, setMessage] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    passwordConfirm: ''
+    passwordConfirm: '',
+    message:''
   });
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}/login`, {
+
+      if (formData.password !== formData.passwordConfirm) {
+        setFormData({ ...formData, message: 'Password tidak cocok' });
+        return;
+      }
+
+      const response = await axios.post(`${BASE_URL}/register`, {
+        name: formData.name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        password: formData.passwordConfirm
       });
 
       if (response.status == 200) {
         document.cookie = `token=${response.data.token}; path=/;`;
-        setMessage(response.data.message);
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          passwordConfirm: '',
+          message: ''
+        });
         window.location.href = '/';
       } else {
-        setMessage('Something wrong');
+        setFormData({...formData, message: 'Something wrong' });
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
-        setMessage(error.response.data.message);
+        setFormData({ ...formData, message: error.response.data.message });
       } else {
-        setMessage('Login gagal. Silakan coba lagi.');
+        setFormData({ ...formData, message: 'Login gagal. Silakan coba lagi.' });
       }
     }
   };
@@ -67,14 +83,21 @@ export default function HomePage() {
         {/* Kanan - Login */}
         <div className="w-1/2 bg-yellow-100 p-10">
           <h2 className="text-2xl font-bold mb-6">Register</h2>
+
+          {formData.message && (
+            <div className="p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
+              <span className="font-medium">Error!</span> {formData.message}
+            </div>
+          )}
+
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-1">Nama</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
               placeholder="Masukkan username"
-              value={formData.email}
-              onChange={e => setFormData({ ...formData, email: e.target.value, message: '' })}
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value, message: '' })}
             />
           </div>
           <div className="mb-4">
@@ -103,13 +126,13 @@ export default function HomePage() {
               type="password"
               className="w-full border border-gray-300 rounded-md px-3 py-2"
               placeholder="Masukkan password"
-              value={formData.password}
-              onChange={e => setFormData({ ...formData, password: e.target.value, message: '' })}
+              value={formData.passwordConfirm}
+              onChange={e => setFormData({ ...formData, passwordConfirm: e.target.value, message: '' })}
             />
           </div>
           <button
             onClick={() => {
-              handleLogin();
+              handleRegister();
             }}
             className="bg-orange-400 w-full text-white py-2 rounded-md hover:bg-orange-500 transition">
             Register

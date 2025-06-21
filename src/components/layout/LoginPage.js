@@ -8,11 +8,10 @@ import axios from 'axios';
 
 
 export default function HomePage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [message, setMessage] = useState('')
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    message: ''
   });
 
   const handleLogin = async () => {
@@ -24,16 +23,16 @@ export default function HomePage() {
 
       if (response.status == 200) {
         document.cookie = `token=${response.data.token}; path=/;`;
-        setMessage(response.data.message);
+        setFormData({...formData, email: '', password: '', message: '' });
         window.location.href = '/';
       } else {
-        setMessage('Something wrong');
+        setFormData({ ...formData, message: 'Something wrong' });
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
-        setMessage(error.response.data.message);
+        setFormData({ ...formData, message: error.response.data.message });
       } else {
-        setMessage('Login gagal. Silakan coba lagi.');
+        setFormData({ ...formData, message: 'Login gagal. Silakan coba lagi.' });
       }
     }
   };
@@ -64,6 +63,13 @@ export default function HomePage() {
         {/* Kanan - Login */}
         <div className="w-1/2 bg-yellow-100 p-10">
           <h2 className="text-2xl font-bold mb-6">Login</h2>
+
+          {formData.message && (
+            <div className="p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
+              <span className="font-medium">Error!</span> {formData.message}
+            </div>
+          )}
+
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-1">Username</label>
             <input
@@ -71,7 +77,7 @@ export default function HomePage() {
               className="w-full border border-gray-300 rounded-md px-3 py-2"
               placeholder="Masukkan username"
               value={formData.email}
-                    onChange={e => setFormData({ ...formData, email: e.target.value, message: '' })}
+              onChange={e => setFormData({ ...formData, email: e.target.value, message: '' })}
             />
           </div>
           <div className="mb-6">
@@ -81,7 +87,7 @@ export default function HomePage() {
               className="w-full border border-gray-300 rounded-md px-3 py-2"
               placeholder="Masukkan password"
               value={formData.password}
-                    onChange={e => setFormData({ ...formData, password: e.target.value, message: '' })}
+              onChange={e => setFormData({ ...formData, password: e.target.value, message: '' })}
             />
           </div>
           <button
