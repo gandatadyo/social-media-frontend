@@ -100,6 +100,45 @@ export default function Beranda() {
     }
   }
 
+  const unLikePosts = async (postId) => {
+    try {
+      const response = await axios.delete(`${BASE_URL}/delete_like`, {
+        data: {
+          token: getCookies().token,
+          post_id: postId
+        }
+      });
+
+      if (response.status === 200) {
+        getPosts();
+      } else {
+        console.error('Failed to unlike post');
+      }
+    } catch (error) {
+      console.log(error);
+      console.error('Error unliking post:', error);
+    }
+  }
+
+  const likePosts = async (postId) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/add_like`, {
+        token: getCookies().token,
+        post_id: postId
+      });
+      if (response.status === 200) {
+        getPosts();
+      } else {
+        console.error('Failed to like post');
+      }
+    } catch (error) {
+      console.log(error);
+      console.error('Error liking post:', error);
+    }
+  }
+
+
+
   useEffect(() => {
     getPosts();
   }, []);
@@ -150,7 +189,7 @@ export default function Beranda() {
             type="text"
             placeholder="Cari postingan..."
             style={{
-              width: 1020,
+              width: 520,
               padding: '0.5rem 1rem',
               borderRadius: 20,
               border: '1px solid #cbd5e1',
@@ -254,12 +293,26 @@ export default function Beranda() {
                           display: 'flex',
                           alignItems: 'center'
                         }}
-                        onClick={() => alert('Like feature coming soon!')}
+                        onClick={() => {
+                          if (parseInt(post.is_liked) > 0) {
+                            unLikePosts(post.id);
+                          } else {
+                            likePosts(post.id);
+                          }
+                        }}
                       >
-                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
-                          <path d="M5 15l7-7 7 7" />
-                        </svg>
-                        Like
+                        {parseInt(post.is_liked) > 0 ? (
+                          // Icon Like (filled heart)
+                          <svg width="18" height="18" fill="#16a34a" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
+                            <path d="M12 21C12 21 4 13.36 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.36 16 21 16 21H12Z" />
+                          </svg>
+                        ) : (
+                          // Icon Unlike (outline heart)
+                          <svg width="18" height="18" fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
+                            <path d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.1 7.24 5.5 9.28c-1.6 2.04-1.1 5.12 1.54 7.05L12 21.35l4.96-5.02c2.64-1.93 3.14-5.01 1.54-7.05-1.6-2.04-4.64-2.68-6.4-.64z" />
+                          </svg>
+                        )}
+                        {parseInt(post.is_liked) > 0 ? 'Liked' : 'Like'}
                       </button>
                       <button
                         style={{
